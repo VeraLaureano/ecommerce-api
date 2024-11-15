@@ -10,6 +10,8 @@ import { cleanXSS } from '../utils/sanitize';
 import { User } from '../interfaces/User.interface';
 import { comparePassword, encryptPassword } from '../utils/bcrypt';
 import { genToken } from '../utils/genToken';
+import { createCart, findAndDeleteCart } from '../services/cart.service';
+import { ICart } from '../interfaces/Cart.interface';
 
 /**
  * @method [POST] user signup
@@ -65,11 +67,22 @@ export const postUserSignup = asyncWrapper(
       password: passwordHashed
     };
 
+    
     // Create the user in the database.
     const data = await createUser(user);
-
+    
     // If signup fails, return an 'USER_SIGNUP_FAILED' error.
     if (!data)
+      return res.status(INTERNAL_SERVER_ERROR).json({ message: 'USER_SIGNUP_FAILED' });
+    
+    const cart: ICart = {
+      userId: data._id,
+      items: []
+    }
+
+    const newCart = await createCart(cart);
+
+    if (!newCart)
       return res.status(INTERNAL_SERVER_ERROR).json({ message: 'USER_SIGNUP_FAILED' });
 
     // Return a successful response with status 'CREATED' and a 'signup' flag.
@@ -207,6 +220,9 @@ export const deleteUser = asyncWrapper(
     // If they don't match, return a 'USERNAME_NOT_MATCH' error.
     if (username !== confirmUsername)
       return res.status(BAD_REQUEST).json({ message: 'USERNAME_NOT_MATCH' });
+
+    // Find and delete cart from this user
+    await findAndDeleteCart(_id as string);
 
     // Find and delete the user based on the cleaned ID.
     await findAndDeleteUser(_id as string);

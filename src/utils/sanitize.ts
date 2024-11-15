@@ -1,5 +1,5 @@
-import DOMPurify from 'dompurify';
+import sanitizeHtml from 'sanitize-html';
 
 export const cleanXSS = (dirty: string): string => {
-  return DOMPurify.sanitize(dirty);
+  return sanitizeHtml(dirty);
 };

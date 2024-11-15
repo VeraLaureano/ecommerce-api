@@ -10,9 +10,9 @@ import { logError } from "../utils/loggers"; // Function for logging errors
 // Handler for fetching all cards
 export const getAllCards = asyncWrapper(async (_req: AuthenticatedRequest, res: Response) => {
   // Fetching all cards from the database
-  const data = await findAllCards();
+  const cards = await findAllCards();
   // Sending the response with status 200 (Everything OK) and the data
-  return res.status(EVERYTHING_OK).json(data);
+  return res.status(EVERYTHING_OK).json(cards);
 })
 
 // Handler for fetching a single card by ID
@@ -21,21 +21,21 @@ export const getOneCard = asyncWrapper(async ({ params: { id } }: AuthenticatedR
   const sanitizedId: string = cleanXSS(id);
 
   // Fetching the card by sanitized ID
-  const data = await findOneCard(sanitizedId);
+  const card = await findOneCard(sanitizedId);
 
   // If the card is not found, return a 404 response
-  if (!data)
+  if (!card)
     return res.status(NOT_FOUND).json('NOT_FOUND_CARD_WITH_THIS_ID')
 
   // If the card is found, return the card data with status 200
-  return res.status(EVERYTHING_OK).json(data);
+  return res.status(EVERYTHING_OK).json(card);
 })
 
 // Handler for creating a new card
 export const postCard = async (req: AuthenticatedRequest, res: Response) => {
   try {
     // Extracting data from the request body (card details)
-    const { name, description, price, imageUrl, available }: ICard = req.body;
+    const { name, description, price, imageUrl, available } = req.body;
 
     // Sanitizing the input data to prevent XSS attacks
     const sanitizedName = cleanXSS(name);
@@ -83,9 +83,9 @@ export const patchCard = async (req: AuthenticatedRequest, res: Response) => {
     const { name, description, price, imageUrl, available }: ICard = req.body;
 
     // Sanitizing the updated fields to prevent XSS attacks
-    const sanitizedName = cleanXSS(name);
-    const sanitizedDescription = cleanXSS(description);
-    const sanitizedImageUrl = cleanXSS(imageUrl);
+    const sanitizedName: string = cleanXSS(name);
+    const sanitizedDescription: string = cleanXSS(description);
+    const sanitizedImageUrl: string = cleanXSS(imageUrl);
 
     // Creating an updated card object
     const updatedData: ICard = {
@@ -101,7 +101,6 @@ export const patchCard = async (req: AuthenticatedRequest, res: Response) => {
 
     // Returning a response with status 200 (Everything OK) and the updated card data
     return res.status(EVERYTHING_OK).json({ message: 'Card updated successfully', card: updatedCard });
-
   } catch (error) {
     // Catching any errors, logging them, and returning a 500 response (Internal Server Error)
     logError(error);

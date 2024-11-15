@@ -1,6 +1,5 @@
 import { Router } from "express";
-import { deleteCard, getAllCards, getOneCard, patchCard } from "../controllers/card.controller";
-import { createCard } from "../services/card.service";
+import { deleteCard, getAllCards, getOneCard, patchCard, postCard } from "../controllers/card.controller";
 import { validateCardData, validateCardId } from "../data_validate/card.data";
 import { handleValidationErrors } from "../utils/handleValidationErrors";
 
@@ -8,7 +7,7 @@ const router = Router();
 
 router.route('/')
   .get(getAllCards)
-  .post(validateCardData, handleValidationErrors, createCard);
+  .post(validateCardData, handleValidationErrors, postCard);
 router.route('/:id')
   .get(validateCardId, handleValidationErrors, getOneCard)
   .patch(validateCardData, handleValidationErrors, patchCard)

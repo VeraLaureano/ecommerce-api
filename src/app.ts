@@ -10,6 +10,7 @@ import { authRouter } from './routes/auth.route';
 import { apiLimiter } from './utils/limiter';
 import { httpTimeout } from './utils/httpTimeout';
 import { cardRouter } from './routes/card.route';
+import { cartRouter } from './routes/cart.route';
 
 // Create an express application
 const app = express();
@@ -31,6 +32,7 @@ app.use(apiLimiter);
 app.use(routes.user, userRouter);
 app.use(routes.user, authentication, authRouter);
 app.use(routes.cards, cardRouter);
+app.use(routes.cart, authentication, cartRouter);
 
 // Set up 404 error handler
 app.use(notFound);
