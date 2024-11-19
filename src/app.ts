@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import ExpressMongoSanitize from 'express-mongo-sanitize';
+import helmet from 'helmet';
 import { notFound } from './middlewares/notFound';
 import { routes } from './config/routes';
 import { userRouter } from './routes/user.route';
@@ -27,6 +28,7 @@ app.use(ExpressMongoSanitize({
   },
 }));
 app.use(apiLimiter);
+app.use(helmet()); // Add default security headers
 
 // Set up routing
 app.use(routes.user, userRouter);

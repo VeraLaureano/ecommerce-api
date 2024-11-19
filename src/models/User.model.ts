@@ -4,20 +4,19 @@ import { User } from '../interfaces/User.interface';
 const UserSchema = new Schema<User>({
   username: {
     type: String,
-    required: [true, 'MUST_PROVIDE_USERNAME'],
+    required: true,
     unique: true
   },
   email: {
     type: String,
-    required: [true, 'MUST_PROVIDE_EMAIL'],
+    required: true,
     unique: true
   },
   password: {
     type: String,
-    required: [true, 'MUST_PROVIDE_PASSWORD'],
+    required: true,
     minlength: [10, 'PASSWORD_MIN_LENGTH_10']
   }
 }, { timestamps: true });
 
-const UserModel = model('User', UserSchema);
-export default UserModel;
+export default model<User>('User', UserSchema);
