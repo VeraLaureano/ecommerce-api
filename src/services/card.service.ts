@@ -1,9 +1,19 @@
 import { ICard } from './../interfaces/Card.interface';
 import CardModel from '../models/Card.model';
+import supabase from '../config/supabase';
 
 export const findAllCards = async () => {
-  const responseSongs = await CardModel.find();
-  return responseSongs;
+  //const responseSongs = await CardModel.find();
+  const { data, error } = await supabase
+    .from('cards')
+    .select('*');
+
+  if (error) {
+    console.error("Error al obtener cartas:", error);
+    throw error;
+  } 
+
+  return data;
 }
 
 export const findOneCard = async (cardID: string) => {

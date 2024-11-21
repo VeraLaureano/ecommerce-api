@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import ExpressMongoSanitize from 'express-mongo-sanitize';
 import helmet from 'helmet';
+import morgan from 'morgan'
 import { notFound } from './middlewares/notFound';
 import { routes } from './config/routes';
 import { userRouter } from './routes/user.route';
@@ -20,6 +21,7 @@ const app = express();
 app.use(httpTimeout);
 app.use(express.json({ limit: '1mb' })); // Limit request body size to 1MB
 app.use(cors());
+app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 app.use(ExpressMongoSanitize({
