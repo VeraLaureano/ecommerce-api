@@ -2,7 +2,7 @@ import { Response } from 'express';
 import { AuthenticatedRequest } from '../interfaces/AuthRequest.interface';
 import { asyncWrapper } from '../utils/asyncWrapper';
 import validator from 'validator';
-import { BAD_REQUEST, CONFLICT, CREATED, EVERYTHING_OK, INTERNAL_SERVER_ERROR, NO_CONTENT, UNAUTHORIZED } from '../config/statusCode';
+import { BAD_REQUEST, CREATED, EVERYTHING_OK, INTERNAL_SERVER_ERROR, NO_CONTENT, UNAUTHORIZED } from '../config/statusCode';
 import { escapeSpecialCharacters } from '../utils/escapedSpecialCharacters';
 import { createUser, findAndDeleteUser, findAndUpdateUser, findUser } from '../services/user.service';
 import { isValidPassword } from '../utils/isValidPassword';
@@ -10,8 +10,7 @@ import { cleanXSS } from '../utils/sanitize';
 import { User } from '../interfaces/User.interface';
 import { comparePassword, encryptPassword } from '../utils/bcrypt';
 import { genToken } from '../utils/genToken';
-import { createCart, findAndDeleteCart } from '../services/cart.service';
-import { ICart } from '../interfaces/Cart.interface';
+import { createCart, findAndDeleteCart, findOneCart } from '../services/cart.service';
 
 /**
  * @method [POST] user signup
@@ -32,11 +31,11 @@ export const postUserSignup = asyncWrapper(
     const cleanEmail: string = cleanXSS(escapedEmail);
 
     // Check if the user already exists based on the cleaned email.
-    const isExistingUser = await findUser(cleanEmail);
+    //const isExistingUser = await findUser(cleanEmail);
 
     // If the user already exists, return a 'CONFLICT' error.
-    if (isExistingUser)
-      return res.status(CONFLICT).json({ message: 'ALREADY_USER_WITH_THAT_EMAIL' });
+    //if (isExistingUser)
+    //  return res.status(CONFLICT).json({ message: 'ALREADY_USER_WITH_THAT_EMAIL' });
 
     // Check if a username is provided.
     if (!username)
@@ -61,29 +60,25 @@ export const postUserSignup = asyncWrapper(
     const passwordHashed = await encryptPassword(cleanPassword);
 
     // Create a user object with cleaned username, email, and hashed password.
-    const user: User = {
+    const data: User = {
       username: cleanUsername,
       email: cleanEmail,
       password: passwordHashed
     };
 
-    
     // Create the user in the database.
-    const data = await createUser(user);
+    await createUser(data);
+    const user = await findUser(escapedEmail);
     
     // If signup fails, return an 'USER_SIGNUP_FAILED' error.
-    if (!data)
-      return res.status(INTERNAL_SERVER_ERROR).json({ message: 'USER_SIGNUP_FAILED' });
-    
-    const cart: ICart = {
-      userId: data._id,
-      items: []
-    }
+    if (!user)
+      return res.status(INTERNAL_SERVER_ERROR).json({ message: 'User signup failed' });
 
-    const newCart = await createCart(cart);
+    await createCart(user.id);
+    const newCart = await findOneCart(user.id)
 
     if (!newCart)
-      return res.status(INTERNAL_SERVER_ERROR).json({ message: 'USER_SIGNUP_FAILED' });
+      return res.status(INTERNAL_SERVER_ERROR).json({ message: 'User signup failed, cart not created' });
 
     // Return a successful response with status 'CREATED' and a 'signup' flag.
     return res.status(CREATED).json({ signup: true });
@@ -128,7 +123,7 @@ export const postUserLogin = asyncWrapper(
       return res.status(UNAUTHORIZED).json({ message: 'INVALID_CREDENTIALS' });
 
     // Generate an authentication token for the user.
-    const token = genToken(user._id);
+    const token = genToken(user.id);
 
     // Return a successful response with status 'EVERYTHING_OK' and the authentication token.
     return res.status(EVERYTHING_OK).json({ token });
@@ -150,7 +145,7 @@ export const patchUser = asyncWrapper(
       return res.status(UNAUTHORIZED).json({ message: 'USER_NO_AUTHENTICATED' });
 
     // Extract the user ID from the authenticated user.
-    const { _id } = req.user;
+    const { id } = req.user;
 
     // Initialize an empty object to store updated data.
     let newData: object = {};
@@ -184,7 +179,7 @@ export const patchUser = asyncWrapper(
     }
 
     // Find and update the user based on the cleaned ID and newData.
-    const newUser = await findAndUpdateUser(_id as string, newData);
+    const newUser = await findAndUpdateUser(id as string, newData as User);
 
     // If the update fails, return an 'USER_UPDATE_FAILED' error.
     if (!newUser)
@@ -213,8 +208,8 @@ export const deleteUser = asyncWrapper(
     if (!req.user)
       return res.status(UNAUTHORIZED).json({ message: 'USER_NO_AUTHENTICATED' });
 
-    // Extract the '_id' and 'username' from the authenticated user.
-    const { _id, username } = req.user;
+    // Extract the 'id' and 'username' from the authenticated user.
+    const { id, username } = req.user;
 
     // Compare the provided 'confirmUsername' with the authenticated user's 'username'.
     // If they don't match, return a 'USERNAME_NOT_MATCH' error.
@@ -222,10 +217,10 @@ export const deleteUser = asyncWrapper(
       return res.status(BAD_REQUEST).json({ message: 'USERNAME_NOT_MATCH' });
 
     // Find and delete cart from this user
-    await findAndDeleteCart(_id as string);
+    await findAndDeleteCart(id as string);
 
     // Find and delete the user based on the cleaned ID.
-    await findAndDeleteUser(_id as string);
+    await findAndDeleteUser(id as string);
 
     // Clear the user object from the request context.
     req.user = undefined;
@@ -247,9 +242,9 @@ export const getUser = asyncWrapper(
       return res.status(UNAUTHORIZED).json({ message: 'USER_NO_AUTHENTICATED' });
 
     // Extract relevant data from the authenticated user.
-    const { _id, username, email } = req.user;
+    const { id, username, email } = req.user;
 
     // Return a successful response with status 'EVERYTHING_OK' and user details.
-    return res.status(EVERYTHING_OK).json({ _id, username, email });
+    return res.status(EVERYTHING_OK).json({ id, username, email });
   }
 );

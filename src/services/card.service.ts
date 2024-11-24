@@ -1,5 +1,4 @@
 import { ICard } from './../interfaces/Card.interface';
-import CardModel from '../models/Card.model';
 import supabase from '../config/supabase';
 
 export const findAllCards = async () => {
@@ -8,30 +7,77 @@ export const findAllCards = async () => {
     .from('cards')
     .select('*');
 
-  if (error) {
-    console.error("Error al obtener cartas:", error);
+  if (error) 
     throw error;
-  } 
 
   return data;
 }
 
 export const findOneCard = async (cardID: string) => {
-  const responseSong = await CardModel.findById({ _id: cardID });
-  return responseSong;{}
+  //const responseSong = await CardModel.findById({ _id: cardID });
+  const { data, error } = await supabase
+    .from('cards')
+    .select('*')
+    .eq('id', cardID)
+    .single();
+
+  if (error) 
+    throw error;
+
+  return data;
 }
 
-export const createCard = async (data: ICard) => {
-  const responseSong = await CardModel.create(data);
-  return responseSong;
+export const createCard = async (card: ICard) => {
+  //const responseSong = await CardModel.create(data);
+  const { data, error } = await supabase
+    .from('cards') // Nombre de la tabla
+    .insert([
+      {
+        name: card.name,
+        description: card.description,
+        price: card.price,
+        image_url: card.imageUrl,  // Uso de image_url
+        available: card.available,
+      }
+    ])
+    .single();
+
+  if (error) 
+    throw error;
+
+  return data;
 }
 
-export const findAndUpdateCard = async (cardID: string, data: ICard) => {
-  const responseSong = await CardModel.findOneAndUpdate({ _id: cardID }, data, { new: true });
-  return responseSong;
+export const findAndUpdateCard = async (cardID: string, card: ICard) => {
+  //const responseSong = await CardModel.findOneAndUpdate({ _id: cardID }, data, { new: true });
+  const { data, error } = await supabase
+    .from('cards')
+    .update({
+      name: card.name,
+      description: card.description,
+      price: card.price,
+      image_url: card.imageUrl,  // Uso de image_url
+      available: card.available,
+    })
+    .eq('id', cardID)
+    .single();
+
+  if (error)
+    throw error;
+
+  return data;
 }
 
 export const findAndDeleteCard = async (cardID: string) => {
-  const responseSong = await CardModel.findOneAndDelete({ _id: cardID })
-  return responseSong;
+  //const responseSong = await CardModel.findOneAndDelete({ _id: cardID })
+  const { data, error } = await supabase
+    .from('cards')
+    .select('*')
+    .eq('id', cardID)
+    .single();
+
+  if (error)
+    throw error
+  
+  return data;
 }

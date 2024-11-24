@@ -4,5 +4,5 @@ export interface ICard {
   price: number;
   imageUrl: string;
   available: boolean;
-  _id?: string;
+  id?: string;
 }

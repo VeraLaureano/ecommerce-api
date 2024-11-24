@@ -1,16 +1,17 @@
 import { Response } from "express";
 import { AuthenticatedRequest } from "../interfaces/AuthRequest.interface";
-import { findAndUpdateCart, findOneCart } from "../services/cart.service";
+import { findOneCart } from "../services/cart.service";
 import { logError } from "../utils/loggers";
 import { EVERYTHING_OK, INTERNAL_SERVER_ERROR, NOT_FOUND, UNAUTHORIZED } from "../config/statusCode";
-import mongoose from "mongoose";
-import { findOneCard } from "../services/card.service";
-import { cleanXSS } from "../utils/sanitize";
+//import mongoose from "mongoose";
+//import { findOneCard } from "../services/card.service";
+//import { cleanXSS } from "../utils/sanitize";
+//import { ICart } from "../interfaces/Cart.interface";
 
 export const getCart = async (req: AuthenticatedRequest, res: Response) => {
   try {
     // Paso 1: Validar que el usuario esté autenticado a través del JWT
-    const userId = req.user?._id; // Esto se obtiene de un middleware de autenticación, asumiendo que el JWT está validado
+    const userId = req.user?.id; // Esto se obtiene de un middleware de autenticación, asumiendo que el JWT está validado
     
     if (!userId)
       return res.status(UNAUTHORIZED).json({ message: 'User unauthorized' })
@@ -31,7 +32,7 @@ export const getCart = async (req: AuthenticatedRequest, res: Response) => {
     return res.status(INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
   }
 };
-
+/*
 export const updateOrAddCardToCart  = async (req: AuthenticatedRequest, res: Response) => {
   const { cardId, quantity } = req.body;  // Suponemos que el cliente pasa el `cardId` y la nueva `quantity`
 
@@ -46,12 +47,12 @@ export const updateOrAddCardToCart  = async (req: AuthenticatedRequest, res: Res
     }
 
     // Paso 2: Buscar el carrito del usuario autenticado
-    const userId = req.user?._id;  // El ID del usuario debe estar en el token JWT
+    const userId = req.user?.id;  // El ID del usuario debe estar en el token JWT
     
     if (!userId)
       return res.status(UNAUTHORIZED).json({ message: 'User unauthorized' })
 
-    const cart = await findOneCart(userId);
+    const cart: ICart = await findOneCart(userId);
 
     // Si el carrito no existe, devolver un error
     if (!cart) {
@@ -70,10 +71,11 @@ export const updateOrAddCardToCart  = async (req: AuthenticatedRequest, res: Res
     }
 
     // Paso 4: Guardar el carrito actualizado
-    const updatedCart = await findAndUpdateCart(userId, cart);
+    //const updatedCart = await findAndUpdateCart(userId, cart);
 
     // Returning a response with status 200 (Everything OK) and the updated card data
-    return res.status(EVERYTHING_OK).json({ message: 'Cart updated successfully', card: updatedCart });
+    return res.status(EVERYTHING_OK).json({ message: 'Cart updated successfully' });
+    //return res.status(EVERYTHING_OK).json({ message: 'Cart updated successfully', card: updatedCart });
   } catch (error) {
     // Catching any errors, logging them, and returning a 500 response (Internal Server Error)
     logError(error);
@@ -99,13 +101,13 @@ export const removeCardFromCart = async (req: AuthenticatedRequest, res: Respons
     }
 
     // Buscar el carrito del usuario
-    const userId = req.user?._id;  // Obtener el ID del usuario del token
+    const userId = req.user?.id;  // Obtener el ID del usuario del token
 
     if (!userId)
       return res.status(UNAUTHORIZED).json({ message: 'User unauthorized' })
 
     const sanitizedUserId: string = cleanXSS(userId);
-    const cart = await findOneCart(sanitizedUserId);
+    const cart: ICart = await findOneCart(sanitizedUserId);
 
     // Si el carrito no existe
     if (!cart) {
@@ -123,7 +125,7 @@ export const removeCardFromCart = async (req: AuthenticatedRequest, res: Respons
     cart.items.splice(existingItemIndex, 1);
 
     // Guardar el carrito actualizado
-    await cart.save();
+    //await cart.save();
 
     return res.status(200).json({
       message: 'Card deleted successfully.',
@@ -135,3 +137,4 @@ export const removeCardFromCart = async (req: AuthenticatedRequest, res: Respons
     return res.status(INTERNAL_SERVER_ERROR).json({ message: 'Internal Server Error' });
   }
 };
+*/

@@ -13,6 +13,14 @@ import { apiLimiter } from './utils/limiter';
 import { httpTimeout } from './utils/httpTimeout';
 import { cardRouter } from './routes/card.route';
 import { cartRouter } from './routes/cart.route';
+import { cartItemRouter } from './routes/cartItem.route';
+
+/**
+ * 
+ * N O T A    I M P O R T A N T E:
+ *      falta moficar el controlador de cart para la base de datos sql
+ * 
+ */
 
 // Create an express application
 const app = express();
@@ -37,6 +45,7 @@ app.use(routes.user, userRouter);
 app.use(routes.user, authentication, authRouter);
 app.use(routes.cards, cardRouter);
 app.use(routes.cart, authentication, cartRouter);
+app.use(routes.items, authentication, cartItemRouter);
 
 // Set up 404 error handler
 app.use(notFound);
