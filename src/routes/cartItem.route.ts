@@ -4,10 +4,10 @@ import { deleteCartItem, getAllCartItems, patchCartItemQuantity, postCartItem } 
 const router = Router()
 
 router.route('/:id')
-  .get(getAllCartItems)
-  .post(postCartItem)
-  .patch(patchCartItemQuantity)
-  .delete(deleteCartItem)
+  .get(getAllCartItems) // Checked
+  .post(postCartItem) // Checked
+  .patch(patchCartItemQuantity) // Checked
+  .delete(deleteCartItem) // Checked
 
 
 export { router as cartItemRouter }

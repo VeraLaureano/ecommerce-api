@@ -1,10 +1,10 @@
 import supabase from "../config/supabase";
 
-export const findAllCartItems = async (cartID: string) => {
+export const findAllCartItems = async (cartId: string) => {
   const { data, error } = await supabase
     .from('cart_items')
     .select('*')
-    .eq('cart_id', cartID);
+    .eq('cart_id', cartId);
 
   if (error) 
     throw error;
@@ -12,11 +12,11 @@ export const findAllCartItems = async (cartID: string) => {
   return data;
 }
 
-export const findOneCartItem = async (cartID: string, cardID: string) => {
+export const findOneCartItem = async (cartId: string, cardID: string) => {
   const { data, error } = await supabase
     .from('cart_items')
     .select('*')
-    .eq('cart_id', cartID)
+    .eq('cart_id', cartId)
     .eq('card_id', cardID)
     .single();
 
@@ -44,13 +44,27 @@ export const createCartItem = async (cartID: string, cardID: string, quantity: n
   return data;
 }
 
-export const updateCartItemQuantity = async (cartID: string, cardID: string, quantity: number) => {
+export const updateCartItemQuantity = async (cartId: string, cardID: string, quantity: number) => {
   const { data, error } = await supabase
     .from('cart_items')
     .update({
       quantity: quantity,
     })
-    .eq('cart_id', cartID)
+    .eq('cart_id', cartId)
+    .eq('card_id', cardID)
+    //.single();
+
+  if (error)
+    throw error;
+
+  return data;
+}
+
+export const findAndDeleteCartItem = async (cartId: string, cardID: string) => {
+  const { data, error } = await supabase
+    .from('cart_items')
+    .delete()
+    .eq('cart_id', cartId)
     .eq('card_id', cardID)
     .single();
 
@@ -60,12 +74,11 @@ export const updateCartItemQuantity = async (cartID: string, cardID: string, qua
   return data;
 }
 
-export const findAndDeleteCartItem = async (cartID: string, cardID: string) => {
+export const findAndDeleteAllCartItems = async (cartId: string) => {
   const { data, error } = await supabase
     .from('cart_items')
     .delete()
-    .eq('cart_id', cartID)
-    .eq('card_id', cardID);
+    .eq('cart_id', cartId);
 
   if (error)
     throw error;
@@ -73,23 +86,11 @@ export const findAndDeleteCartItem = async (cartID: string, cardID: string) => {
   return data;
 }
 
-export const findAndDeleteAllCartItems = async (cartID: string) => {
-  const { data, error } = await supabase
-    .from('cart_items')
-    .delete()
-    .eq('cart_id', cartID);
-
-  if (error)
-    throw error;
-
-  return data;
-}
-
-export const getCartSummary = async (cartID: string) => {
+export const getCartSummary = async (cartId: string) => {
   const { data, error } = await supabase
     .from('cart_items')
     .select('card_id, quantity')
-    .eq('cart_id', cartID);
+    .eq('cart_id', cartId);
 
   if (error)
     throw error;

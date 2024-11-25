@@ -4,13 +4,14 @@ import { asyncWrapper } from '../utils/asyncWrapper';
 import validator from 'validator';
 import { BAD_REQUEST, CREATED, EVERYTHING_OK, INTERNAL_SERVER_ERROR, NO_CONTENT, UNAUTHORIZED } from '../config/statusCode';
 import { escapeSpecialCharacters } from '../utils/escapedSpecialCharacters';
-import { createUser, findAndDeleteUser, findAndUpdateUser, findUser } from '../services/user.service';
+import { createUser, findAndDeleteUser, findAndUpdateUser, findUser, findUserAuth } from '../services/user.service';
 import { isValidPassword } from '../utils/isValidPassword';
 import { cleanXSS } from '../utils/sanitize';
 import { User } from '../interfaces/User.interface';
 import { comparePassword, encryptPassword } from '../utils/bcrypt';
 import { genToken } from '../utils/genToken';
 import { createCart, findAndDeleteCart, findOneCart } from '../services/cart.service';
+import { CartItem } from '../interfaces/CartItem.interface';
 
 /**
  * @method [POST] user signup
@@ -175,19 +176,21 @@ export const patchUser = asyncWrapper(
       const passwordHashed: string = await encryptPassword(cleanPassword);
 
       // Add the hashed password to the newData object.
+      // https://github.com/VeraLaureano/ecommerce-api
       newData = { ...newData, password: passwordHashed };
     }
 
     // Find and update the user based on the cleaned ID and newData.
-    const newUser = await findAndUpdateUser(id as string, newData as User);
+    await findAndUpdateUser(id as string, newData as User);
+    const updatedUser = await findUserAuth(id as string);
 
     // If the update fails, return an 'USER_UPDATE_FAILED' error.
-    if (!newUser)
+    if (!updatedUser)
       return res.status(INTERNAL_SERVER_ERROR).json({ message: 'USER_UPDATE_FAILED' });
 
     // Update the user object in the request context.
-    if (newUser)
-      req.user = newUser;
+    if (updatedUser)
+      req.user = updatedUser;
 
     // Return a successful response with status 'CREATED' and an 'updated' flag.
     return res.status(CREATED).json({ updated: true });
@@ -244,7 +247,17 @@ export const getUser = asyncWrapper(
     // Extract relevant data from the authenticated user.
     const { id, username, email } = req.user;
 
+    const cart = await findOneCart(id as string)
+
+    const cartItems: cartItemI[] = [];
+
+    cart.cart_items.map(({card_id, quantity}: CartItem) => cartItems.push({ card_id, quantity }))
+
     // Return a successful response with status 'EVERYTHING_OK' and user details.
-    return res.status(EVERYTHING_OK).json({ id, username, email });
+    return res.status(EVERYTHING_OK).json({ id, username, email, cart: cartItems });
   }
 );
+
+interface cartItemI { 
+  card_id: number, quantity: number 
+}

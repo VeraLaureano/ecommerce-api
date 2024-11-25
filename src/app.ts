@@ -19,7 +19,8 @@ import { cartItemRouter } from './routes/cartItem.route';
  * 
  * N O T A    I M P O R T A N T E:
  *      falta moficar el controlador de cart para la base de datos sql
- * 
+ *      verificar si existe la carta en el carrito antes de añadir
+ *      falta eliminar items del carrito al eliminar usuario
  */
 
 // Create an express application

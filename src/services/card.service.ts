@@ -13,7 +13,7 @@ export const findAllCards = async () => {
   return data;
 }
 
-export const findOneCard = async (cardID: string) => {
+export const findOneCard = async (cardID: string | number) => {
   //const responseSong = await CardModel.findById({ _id: cardID });
   const { data, error } = await supabase
     .from('cards')
@@ -72,7 +72,7 @@ export const findAndDeleteCard = async (cardID: string) => {
   //const responseSong = await CardModel.findOneAndDelete({ _id: cardID })
   const { data, error } = await supabase
     .from('cards')
-    .select('*')
+    .delete()
     .eq('id', cardID)
     .single();
 

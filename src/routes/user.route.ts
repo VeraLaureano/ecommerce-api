@@ -5,8 +5,8 @@ import { loginLimiter, signupLimiter } from './../utils/limiter';
 const router = Router();
 
 router.route('/signup')
-  .post(signupLimiter, postUserSignup);
+  .post(signupLimiter, postUserSignup); // Checked
 router.route('/login')
-  .post(loginLimiter, postUserLogin);
+  .post(loginLimiter, postUserLogin); // Checked
 
 export { router as userRouter };

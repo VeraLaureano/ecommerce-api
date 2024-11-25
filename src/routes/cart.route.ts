@@ -3,7 +3,7 @@ import { getCart } from "../controllers/cart.controller";
 const router = Router()
 
 router.route('/')
-  .get(getCart)
+  .get(getCart) // Checked
 //router.route('/:id')
 //  .patch(updateOrAddCardToCart);
 //router.route('/:id/remove')

@@ -19,6 +19,10 @@ export const getAllCards = asyncWrapper(async (_req: AuthenticatedRequest, res: 
 export const getOneCard = asyncWrapper(async ({ params: { id } }: AuthenticatedRequest, res: Response) => {
   // Sanitize the ID to prevent XSS injections
   const sanitizedId: string = cleanXSS(id);
+  //const numericId: number = Number(sanitizedId);
+
+  //if (isNaN(numericId) && typeof numericId !== 'number')
+  //  return res.status(BAD_REQUEST).json({ message: 'Quantity should be a number' });
 
   // Fetching the card by sanitized ID
   const card = await findOneCard(sanitizedId);
