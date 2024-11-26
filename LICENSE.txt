@@ -1,0 +1,20 @@
+Licencia de uso no comercial con atribución
+
+Copyright (c) 2024 Laureano Ivan Gerardo Vera
+
+Se concede permiso para utilizar, modificar y distribuir este software bajo las siguientes condiciones:
+
+1. **Uso no comercial**: Este software solo puede ser utilizado con fines personales, educativos o no comerciales. No se permite su uso con fines comerciales sin la autorización previa por escrito del titular de los derechos de autor.
+
+2. **Uso comercial**: Si deseas utilizar este software con fines comerciales, deberás obtener una autorización previa por escrito del titular de los derechos de autor. En caso de que se apruebe el uso comercial, deberás dar crédito adecuado al autor del software, en la forma que el titular de los derechos de autor indique.
+
+3. **Atribución**: Si distribuyes el software o sus derivados, debes dar crédito de forma adecuada, proporcionando un enlace a la licencia y mencionando al autor de manera explícita en la documentación y/o en el código fuente.
+
+4. **Modificaciones**: Puedes realizar modificaciones al código, pero debes cumplir con las condiciones anteriores. Si distribuyes las modificaciones, debes indicar los cambios realizados.
+
+5. **Sin garantías**: Este software se proporciona "tal cual", sin garantías de ningún tipo, expresas o implícitas, incluyendo pero no limitado a garantías de comerciabilidad o adecuación para un propósito particular.
+
+---
+
+Para más información o para solicitar permiso para un uso comercial, por favor contacta con laureanoivangerardovera@gmail.com.
+

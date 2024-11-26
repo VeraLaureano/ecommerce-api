@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2024 [Your Name or Organization Name]
+ * 
+ * This code is covered by a Non-Commercial Use License with Attribution.
+ * Commercial use is not allowed without prior authorization.
+ * For more information, please refer to the LICENSE file.
+ */
+
 import express from 'express';
 import cors from 'cors';
 import ExpressMongoSanitize from 'express-mongo-sanitize';

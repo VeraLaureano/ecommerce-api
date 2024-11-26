@@ -1,3 +1,11 @@
+/**
+ * Copyright (c) 2024 [Your Name or Organization Name]
+ * 
+ * This code is covered by a Non-Commercial Use License with Attribution.
+ * Commercial use is not allowed without prior authorization.
+ * For more information, please refer to the LICENSE file.
+ */
+
 import { Response } from 'express';
 import { AuthenticatedRequest } from '../interfaces/AuthRequest.interface';
 import { asyncWrapper } from '../utils/asyncWrapper';
@@ -12,6 +20,7 @@ import { comparePassword, encryptPassword } from '../utils/bcrypt';
 import { genToken } from '../utils/genToken';
 import { createCart, findAndDeleteCart, findOneCart } from '../services/cart.service';
 import { CartItem } from '../interfaces/CartItem.interface';
+import { findAndDeleteAllCartItems } from '../services/cartItem.service';
 
 /**
  * @method [POST] user signup
@@ -219,10 +228,15 @@ export const deleteUser = asyncWrapper(
     if (username !== confirmUsername)
       return res.status(BAD_REQUEST).json({ message: 'USERNAME_NOT_MATCH' });
 
+    const cart = await findOneCart(id as string)
+
+    // Find and delete all cart items from this cart
+    await findAndDeleteAllCartItems(cart.id);
+
     // Find and delete cart from this user
     await findAndDeleteCart(id as string);
 
-    // Find and delete the user based on the cleaned ID.
+    // Find and delete the user based on the ID.
     await findAndDeleteUser(id as string);
 
     // Clear the user object from the request context.
