@@ -23,6 +23,25 @@ export const notFound = (req: AuthenticatedRequest, res: Response) => {
         methods: ['POST']
       }
     ],
-    docs: routes.docs
+    cards: [
+      {
+        path: routes.cards,
+        methods: ['GET', 'POST']
+      },
+      {
+        path: `${routes.cards}/:id`,
+        methods: ['GET', 'PATCH', 'DELETE']
+      },
+    ],
+    cart: {
+      path: routes.cart,
+      methods: ['GET']
+    },
+    cart_items:[
+      {
+        path: `${routes.items}/:userId`,
+        methods: ['GET', 'POST', 'PATCH', 'DELETE']
+      }
+    ]
   });
 };
