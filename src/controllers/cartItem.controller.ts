@@ -49,7 +49,23 @@ export const postCartItem = asyncWrapper(async ({ params: { id }, body }: Authen
   
   const sanitizedId: string = cleanXSS(id)
   const cart = await findOneCart(sanitizedId)
+  const cartItems = await findAllCartItems(cart.id)
   const sanitizedCardId: string = cleanXSS(cardId);
+  const isIncluded: boolean = cartItems.some(item => item.card_id === cardId)
+
+  if (isIncluded) {
+    const itemCartFind = cartItems.find(item => item.card_id === cardId)
+    
+    const newQuantity: number = itemCartFind.quantity + quantity
+    await updateCartItemQuantity(cart.id, sanitizedCardId, newQuantity);
+  
+    const updatedCartItem: CartItem = await findOneCartItem(cart.id, sanitizedCardId);  
+  
+    if (!updatedCartItem) 
+      return res.status(NOT_FOUND).json({ message: 'Item not found in cart' });
+  
+    return res.status(EVERYTHING_OK).json({ message: 'Item quantity updated successfully' });
+  }
 
   if (!cart)
     return res.status(NOT_FOUND).json('Not found cart with this id')
@@ -86,7 +102,7 @@ export const patchCartItemQuantity = asyncWrapper(async ({ params: { id }, body 
   if (!updatedCartItem) 
     return res.status(NOT_FOUND).json({ message: 'Item not found in cart' });
 
-  return res.status(EVERYTHING_OK).json({ message: 'Item quantity updated successfully', cartItem: updatedCartItem });
+  return res.status(EVERYTHING_OK).json({ message: 'Item quantity updated successfully' });
 });
 
 export const deleteCartItem = asyncWrapper(async ({ params: { id }, body }: AuthenticatedRequest, res: Response) => {
